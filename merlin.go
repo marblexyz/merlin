@@ -60,3 +60,12 @@ func (t *Transcript) ExtractBytes(label []byte, outLen int) []byte {
 	outBytes := t.s.PRF(outLen)
 	return outBytes
 }
+
+func (t *Transcript) MarshalBinary() ([]byte, error) {
+	return t.s.Serialize(), nil
+}
+
+func (t *Transcript) UnmarshalBinary(data []byte) error {
+	t.s = strobe.RecoverState(data)
+	return nil
+}
