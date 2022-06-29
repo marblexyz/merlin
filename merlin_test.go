@@ -50,3 +50,37 @@ func TestComplexTranscript(t *testing.T) {
 		t.Errorf("\nGot : %s\nWant: %s", chlHex, expectedChlHex)
 	}
 }
+
+func TestEqualsCompareTranscript(t *testing.T) {
+	tr := NewTranscript("test protocol")
+	tr.AppendMessage([]byte("step1"), []byte("some data"))
+
+	data := make([]byte, 1024)
+	for i := range data {
+		data[i] = 99
+	}
+
+	var chlBytes []byte
+	for i := 0; i < 32; i++ {
+		chlBytes = tr.ExtractBytes([]byte("challenge"), 32)
+		tr.AppendMessage([]byte("bigdata"), data)
+		tr.AppendMessage([]byte("challengedata"), chlBytes)
+	}
+	clonedStrobe := tr.s.Clone()
+	tr2 := &Transcript{s: *clonedStrobe}
+	if !tr.Equals(tr2) {
+		t.Errorf("Cloned tr2 does not equal tr")
+	}
+
+	tr3 := &Transcript{}
+	data, err := tr.MarshalBinary()
+	if err != nil {
+		t.Errorf("error while marshalling transcript")
+	}
+	if err = tr3.UnmarshalBinary(data); err != nil {
+		t.Errorf("error while unmarshalling transcript")
+	}
+	if !tr.Equals(tr3) {
+		t.Errorf("Marshal -> Unmarshalled tr3 does not equal tr")
+	}
+}

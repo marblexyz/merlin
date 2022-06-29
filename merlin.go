@@ -1,8 +1,8 @@
 package merlin
 
 import (
+	"bytes"
 	"encoding/binary"
-
 	"github.com/mimoo/StrobeGo/strobe"
 )
 
@@ -68,4 +68,10 @@ func (t *Transcript) MarshalBinary() ([]byte, error) {
 func (t *Transcript) UnmarshalBinary(data []byte) error {
 	t.s = strobe.RecoverState(data)
 	return nil
+}
+
+func (t *Transcript) Equals(cmp *Transcript) bool {
+	b1, _ := t.MarshalBinary()
+	b2, _ := cmp.MarshalBinary()
+	return bytes.Compare(b1, b2) == 0
 }
