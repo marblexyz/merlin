@@ -1,4 +1,4 @@
-module github.com/trysuperdrop/merlin
+module github.com/marblexyz/merlin
 
 go 1.12
 
